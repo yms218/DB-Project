@@ -119,18 +119,15 @@ def popularity_based_rating(user_input=True, item_cnt=None):
 
 
 # [Algorithm 2] Item-based Recommendation
-def ibcf(user_input=True, user_id=None, rec_threshold=None, rec_max_cnt=None):
+def ibcf(user_input=True, user_id=None, item_cnt=None):
     if user_input:
         user = int(input('User Id: '))
-        rec_cnt = int(input('Recommend Count: '))
-        rec_num = float(input('Recommendation Threshold: '))
+        rec_num = int(input('Number of recommendations?: '))
     else:
         assert user_id is not None
-        assert rec_max_cnt is not None
-        assert rec_threshold is not None
+        assert item_cnt is not None
         user = int(user_id)
-        rec_cnt = int(rec_max_cnt)
-        rec_num = float(rec_threshold)
+        rec_num = int(item_cnt)
 
     print("=" * 99)
     print(f'Item-based Collaborative Filtering')
@@ -154,18 +151,15 @@ def ibcf(user_input=True, user_id=None, rec_threshold=None, rec_max_cnt=None):
 
 
 # [Algorithm 3] (Optional) User-based Recommendation
-def ubcf(user_input=True, user_id=None, rec_threshold=None, rec_max_cnt=None):
+def ubcf(user_input=True, user_id=None, item_cnt=None):
     if user_input:
         user = int(input('User Id: '))
-        rec_cnt = int(input('Recommend Count: '))
-        rec_num = float(input('Recommendation Threshold: '))
+        rec_num = int(input('Number of recommendations?: '))
     else:
         assert user_id is not None
-        assert rec_max_cnt is not None
-        assert rec_threshold is not None
+        assert item_cnt is not None
         user = int(user_id)
-        rec_cnt = int(rec_max_cnt)
-        rec_num = float(rec_threshold)
+        rec_num = int(item_cnt)
 
     print("=" * 99)
     print(f'User-based Collaborative Filtering')
