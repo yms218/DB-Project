@@ -16,11 +16,12 @@ import sys
 ## Connect to Remote Database
 ## Insert database information
 
-HOST = ""
-PORT = ""
-USER = ""
-PASSWD = ""
-DB = ""
+
+HOST = "147.46.15.238" # database 를 생성/연결할 서버 IP
+PORT = "7000"
+USER = "DS2024_0046"
+PASSWD = "DS2024_0046"
+DB = "DS_proj_19"
 
 connection = mysql.connector.connect(
     host=HOST,
