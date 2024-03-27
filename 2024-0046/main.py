@@ -7,20 +7,24 @@
 #                                                                 #
 ###################################################################
 
+
 import mysql.connector
 from tabulate import tabulate
 import pandas as pd
 import math
 import sys
 
+
+
+
 ## Connect to Remote Database
 ## Insert database information
 
-HOST = ""
-PORT = ""
-USER = ""
-PASSWD = ""
-DB = ""
+HOST = "147.46.15.238"
+PORT = "7000"
+USER = "DS2024_0046"
+PASSWD = "DS2024_0046"
+DB = "DS_proj_19"
 
 connection = mysql.connector.connect(
     host=HOST,
@@ -58,6 +62,10 @@ def get_dump(mysql_con, filename):
         sys.exit()
 
 
+# dump로 DB에 sql 파일을 upload 수정 완료 시 주석 해제 필요
+# get_dump(connection, 'prj.sql')
+
+
 ## 수정할 필요 없는 함수입니다.
 # SQL query 를 받아 해당 query를 보내고 그 결과 값을 dataframe으로 저장해 return 해주는 함수
 def get_output(query):
@@ -80,7 +88,19 @@ def popularity_based_count(user_input=True, item_cnt=None):
     # TODO: remove sample, return actual recommendation result as df
     # YOUR CODE GOES HERE !
     # 쿼리의 결과를 sample 변수에 저장하세요.
-    sample = [(x, 5.0-0.1*x) for x in range(rec_num)]
+    query = f'''
+        SELECT item, count(user) count
+        FROM
+            ratings
+        WHERE
+            rating is not null
+        GROUP BY
+            item            
+        ORDER BY
+            count desc
+        LIMIT {rec_num}
+        '''
+    sample = get_output(query)
 
     # do not change column names
     df = pd.DataFrame(sample, columns=['item', 'count'])
@@ -106,7 +126,30 @@ def popularity_based_rating(user_input=True, item_cnt=None):
     # TODO: remove sample, return actual recommendation result as df
     # YOUR CODE GOES HERE !
     # 쿼리의 결과를 sample 변수에 저장하세요.
-    sample = [(x, 5.0-0.1*x) for x in range(rec_num)]
+    query = f'''
+            SELECT r1.item, round(avg((r1.rating-r2.min)/(r2.max-r2.min)),4) prediction
+            FROM
+                ratings r1 join
+                (
+                SELECT 
+                    max(rating) max, min(rating) min, user
+                FROM
+                    ratings
+                WHERE
+                    rating is not null
+                GROUP BY
+                    user
+                ) r2 using(user)
+            WHERE
+                rating is not null
+            GROUP BY
+                item            
+            ORDER BY
+                prediction desc
+            LIMIT {rec_num}
+            '''
+    sample = get_output(query)
+    print(sample)
 
     # do not change column names
     df = pd.DataFrame(sample, columns=['item', 'prediction'])
@@ -119,15 +162,18 @@ def popularity_based_rating(user_input=True, item_cnt=None):
 
 
 # [Algorithm 2] Item-based Recommendation
-def ibcf(user_input=True, user_id=None, item_cnt=None):
+def ibcf(user_input=True, user_id=None, rec_threshold=None, rec_max_cnt=None):
     if user_input:
         user = int(input('User Id: '))
-        rec_num = int(input('Number of recommendations?: '))
+        rec_cnt = int(input('Recommend Count: '))
+        rec_num = float(input('Recommendation Threshold: '))
     else:
         assert user_id is not None
-        assert item_cnt is not None
+        assert rec_max_cnt is not None
+        assert rec_threshold is not None
         user = int(user_id)
-        rec_num = int(item_cnt)
+        rec_cnt = int(rec_max_cnt)
+        rec_num = float(rec_threshold)
 
     print("=" * 99)
     print(f'Item-based Collaborative Filtering')
@@ -151,15 +197,18 @@ def ibcf(user_input=True, user_id=None, item_cnt=None):
 
 
 # [Algorithm 3] (Optional) User-based Recommendation
-def ubcf(user_input=True, user_id=None, item_cnt=None):
+def ubcf(user_input=True, user_id=None, rec_threshold=None, rec_max_cnt=None):
     if user_input:
         user = int(input('User Id: '))
-        rec_num = int(input('Number of recommendations?: '))
+        rec_cnt = int(input('Recommend Count: '))
+        rec_num = float(input('Recommendation Threshold: '))
     else:
         assert user_id is not None
-        assert item_cnt is not None
+        assert rec_max_cnt is not None
+        assert rec_threshold is not None
         user = int(user_id)
-        rec_num = int(item_cnt)
+        rec_cnt = int(rec_max_cnt)
+        rec_num = float(rec_threshold)
 
     print("=" * 99)
     print(f'User-based Collaborative Filtering')
