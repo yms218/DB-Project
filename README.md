@@ -1,24 +1,15 @@
-# DB-Project
+# Git 설정
 
 1. Windows WSL2 설치 - https://hkim-data.tistory.com/17
 
-
-
 2. Github Token 발급 - [[GitHub] 깃허브 토큰(Token) 생성하는 법 :: 대두코기](https://hoohaha.tistory.com/37)
 
-
-
-
-
-3.  git 환경 구축
+3. git 환경 구축
 - git clone
   
   ```
   git clone https://github.com/yms218/DB-Project.git
   ```
-
-
-
 4. 파일/폴더 변경 후 commit 방법
 - root 폴더로 이동한다 
 
@@ -54,4 +45,10 @@
   
   ```
   git push
+  ```
+
+- master 와 sync 맞춤
+  
+  ```
+  git pull
   ```
