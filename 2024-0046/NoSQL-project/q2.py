@@ -1,26 +1,24 @@
 from sys import argv
 from pymongo import MongoClient
 
-client = MongoClient()
+client = MongoClient('mongodb://localhost:27017/')
 db = client.movielens
 
 
 
 def q2(input_tag: str):
     # TODO: 
-    mov_cursor = db.tags.find({'tag': input_tag}, {'movieId': 1, '_id': 0})
-    mov_list = set([m['movieId'] for m in mov_cursor])
-    if not mov_list:
-        print(f"No title found with tag: {input_tag}")
-        return          
-    titles = set()
-    for mov in mov_list:
-        title = db.movies.find_one({ 'movieId': mov}, {'title':1, '_id':0})
-        titles.add(title['title'])
-  
-    for title in sorted(titles):
-        print(title)
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client.movielens
+    movie_ids = db.ml_tags.distinct("movieId", {"tag": input_tag})
+
+    # ml_movies에서 해당 movieId들로 document의 title들 가져오기 (중복 없이 오름차순 정렬)
+    titles = db.ml_movies.find({"movieId": {"$in": movie_ids}}, {"title": 1, "_id": 0}).sort("title", 1)
+    unique_titles = sorted(set(doc["title"] for doc in titles))
+
+    print(*unique_titles, sep='\n')
         
+
 
 if __name__ == '__main__':
     q2(argv[1])

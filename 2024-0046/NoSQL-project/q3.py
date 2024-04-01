@@ -1,36 +1,30 @@
 from sys import argv
 from pymongo import MongoClient
 
-client = MongoClient()
+client = MongoClient('mongodb://localhost:27017/')
 db = client.movielens
 
 def q3(input_title: str):
     # TODO: 
-    movid_cursor = db.movies.find_one({'title': input_title}, {'movieId': 1, '_id':0})    
-    if not movid_cursor:
-        print(f"No movie found with title: {input_title}")
-        return        
-    mov_id = movid_cursor['movieId'] 
-    
-    
-    ratings_cursor = db.ratings.find({ 'movieId': mov_id}, {"_id": 0, "rating": 1})
-    
-    sum_rating = 0
-    count_rating = 0 
-    
-    for rating in ratings_cursor:
-        sum_rating += rating['rating']
-        count_rating += 1
-    
-    if not count_rating:
-        print(f"No ratings found for movie: {input_title}")
-        return                 
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client.movielens
+    # ml_movies에서 입력받은 title로 검색한 document의 movieId 값을 찾기
+    movie_id = db.ml_movies.find_one({'title': input_title}, {'movieId': 1})
 
-    _avg = sum_rating/count_rating
-    print('{:.3f}'.format(_avg))
+    if movie_id:
+        # 해당 movieId로 ml_ratings에서 해당 영화의 평점을 가져옵니다.
+        ratings = [doc['rating'] for doc in db.ml_ratings.find({'movieId': movie_id['movieId']}, {'rating': 1})]
+
+        # 평균 평점을 계산합니다.
+        average_rating = sum(ratings) / len(ratings) if ratings else None
+        return print(f"{average_rating:.3f}")
+    else:
+        print("영화를 찾을 수 없습니다.")
+        return None
 
 
-q3('Doom Generation, The (1995)')
-# if __name__ == '__main__':
-    # q3(argv[1])
+
+
+if __name__ == '__main__':
+    q3(argv[1])
 
